@@ -9,8 +9,9 @@ from aiogram.fsm.storage.redis import RedisStorage
 from structlog.typing import FilteringBoundLogger
 
 from bot.config_reader import LogConfig, get_config, BotConfig, FSMMode, RedisConfig, GameConfig
+from bot.db import Database
 from bot.fluent_loader import get_fluent_localization
-from bot.handlers import default_commands, spin
+from bot.handlers import default_commands, spin, group_games
 from bot.logs import get_structlog_config
 from bot.middlewares.throttling import ThrottlingMiddleware
 from bot.ui_commands import set_bot_commands
@@ -19,6 +20,9 @@ from bot.ui_commands import set_bot_commands
 async def main():
     log_config = get_config(model=LogConfig, root_key="logs")
     structlog.configure(**get_structlog_config(log_config))
+
+    db = Database()
+    await db.create_tables()
 
     bot_config = get_config(model=BotConfig, root_key="bot")
     bot = Bot(
@@ -47,13 +51,15 @@ async def main():
         storage=storage,
         l10n=l10n,
         game_config=game_config,
+        db=db,
     )
     # Make bot work only in PM (one-on-one chats) with bot
-    dp.message.filter(F.chat.type == "private")
+    # dp.message.filter(F.chat.type == "private")
 
     # Register routers with handlers
     dp.include_router(default_commands.router)
     dp.include_router(spin.router)
+    dp.include_router(group_games.router)
 
     # Register throttling middleware
     dp.message.middleware(
