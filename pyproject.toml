@@ -1,7 +1,7 @@
 [project]
-name = "telegram-casino-bot"
+name = "left4casino"
 version = "2025.06.1"
-description = "A simple casino-like bot for Telegram"
+description = "A simple casino-like bot for Telegram with economy and AI credits"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

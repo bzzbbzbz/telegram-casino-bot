@@ -4,8 +4,8 @@ After=network.target redis.service
 
 [Service]
 Type=simple
-WorkingDirectory=/home/user/casino-bot
-ExecStart=/home/user/casino-bot/venv/bin/python -m bot
+WorkingDirectory=/opt/left4casino
+ExecStart=/opt/left4casino/venv/bin/python -m bot
 KillMode=process
 Restart=always
 RestartSec=10

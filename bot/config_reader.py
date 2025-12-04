@@ -61,6 +61,11 @@ class ChatRestrictionsConfig(BaseModel):
     allowed_chat_ids: list[int]
 
 
+class ReportsConfig(BaseModel):
+    timezone: str = "UTC"
+    admin_id: int = 0
+
+
 class AIConfig(BaseModel):
     provider: str = "mock"
     api_key: str = "dummy"

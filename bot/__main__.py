@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from structlog.typing import FilteringBoundLogger
 
-from bot.config_reader import LogConfig, get_config, BotConfig, FSMMode, RedisConfig, GameConfig, ChatRestrictionsConfig, AIConfig
+from bot.config_reader import LogConfig, get_config, BotConfig, FSMMode, RedisConfig, GameConfig, ChatRestrictionsConfig, AIConfig, ReportsConfig
 from bot.db import Database
 from bot.fluent_loader import get_fluent_localization
 from bot.handlers import default_commands, spin, group_games, transfer, ai_credit
@@ -63,6 +63,7 @@ async def main():
     game_config = get_config(model=GameConfig, root_key="game_config")
     chat_restrictions_config = get_config(model=ChatRestrictionsConfig, root_key="chat_restrictions")
     ai_config = get_config(model=AIConfig, root_key="ai")
+    reports_config = get_config(model=ReportsConfig, root_key="reports")
     
     ai_client = AIClient(ai_config)
 
@@ -105,7 +106,7 @@ async def main():
     # Setup Scheduler
     scheduler = AsyncIOScheduler()
     daily_stats_service = DailyStatsService(db, bot)
-    timezone = pytz.timezone('Asia/Yekaterinburg') # UTC+5
+    timezone = pytz.timezone(reports_config.timezone)
 
     async def send_daily_reports():
         # Send to all allowed chats
@@ -119,7 +120,9 @@ async def main():
 
     async def send_draft_report():
         # Send draft to specific user
-        target_user_id = 4810634
+        target_user_id = reports_config.admin_id
+        if target_user_id == 0:
+            return
         # Use today's stats for the draft sent at 23:30
         await daily_stats_service.generate_and_send_report(target_user_id, is_dry_run=True, use_today=True)
 

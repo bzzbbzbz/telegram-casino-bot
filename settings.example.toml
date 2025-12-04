@@ -47,6 +47,12 @@ block_private_chats = false
 # Example: allowed_chat_ids = [-100123456789, -100987654321]
 allowed_chat_ids = []
 
+[reports]
+# Timezone for daily reports
+timezone = "Asia/Yekaterinburg"
+# User ID to send draft reports to (optional)
+admin_id = 123456789
+
 [ai]
 provider = "mock"
 api_key = "dummy"
