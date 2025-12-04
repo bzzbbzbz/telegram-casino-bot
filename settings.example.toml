@@ -39,3 +39,16 @@ send_gameover_sticker = true
 throttle_time_spin = 2
 # Throttling time for all other actions.
 throttle_time_other = 1
+
+[chat_restrictions]
+# If true, the bot will ignore messages in private chats (DM)
+block_private_chats = false
+# List of allowed chat IDs (whitelist). If empty, all group chats are allowed.
+# Example: allowed_chat_ids = [-100123456789, -100987654321]
+allowed_chat_ids = []
+
+[ai]
+provider = "mock"
+api_key = "dummy"
+model = "deepseek/deepseek-chat"
+credit_cooldown_minutes = 15

@@ -6,3 +6,4 @@ settings.example.toml
 .vscode/
 __pycache__
 *.pyc
+groups.json

@@ -10,6 +10,7 @@ from aiogram.types import Message
 from fluent.runtime import FluentLocalization
 
 from bot.config_reader import GameConfig
+from bot.db import Database
 from bot.dice_check import get_combo_text, get_score_change
 from bot.filters import SpinTextFilter
 from bot.keyboards import get_spin_keyboard
@@ -25,10 +26,14 @@ async def cmd_spin(
         state: FSMContext,
         l10n: FluentLocalization,
         game_config: GameConfig,
+        db: Database,
 ):
+    user_id = message.from_user.id
+    if message.from_user.username:
+        await db.register_user(user_id, message.from_user.username)
+
     # Get current score
-    user_data = await state.get_data()
-    user_score = user_data.get("score", game_config.starting_points)
+    user_score = await db.get_balance(user_id, game_config.starting_points)
 
     if user_score == 0:
         if game_config.send_gameover_sticker:
@@ -49,8 +54,9 @@ async def cmd_spin(
     else:
         win_or_lose_text = l10n.format_value("spin-success", {"score-value": score_change})
 
-    # Updating score in FSM data
+    # Updating score in DB and FSM
     new_score = user_score + score_change
+    await db.set_balance(user_id, new_score)
     await state.update_data(score=new_score)
 
     # This delay is roughly equivalent of animation duration

@@ -1,7 +1,8 @@
 # Source: https://gist.github.com/MasterGroosha/963c0a82df348419788065ab229094ac
 
 from functools import lru_cache
-from typing import List
+from typing import List, Tuple
+import random
 
 from fluent.runtime import FluentLocalization
 
@@ -64,3 +65,28 @@ def get_combo_text(dice_value: int, l10n: FluentLocalization) -> str:
     for i in range(len(parts)):
         parts[i] = l10n.format_value(parts[i])
     return ", ".join(parts)
+
+
+def get_super_jackpot() -> Tuple[int, str | None]:
+    """
+    Calculates Super Jackpot multiplier.
+    Returns (multiplier, jackpot_name).
+    Multiplier is 1 if no jackpot.
+    """
+    # 15% chance to trigger Super Jackpot
+    if random.random() > 0.15:
+        return 1, None
+
+    # Weighted choice for multiplier
+    # x2 (Mini): 65%, x3 (Major): 25%, x5 (Mega): 9%, x10 (Grand): 1%
+    multipliers = [2, 3, 5, 10]
+    weights = [65, 25, 9, 1]
+    names = {
+        2: "Mini",
+        3: "Major",
+        5: "Mega",
+        10: "Grand"
+    }
+    
+    multiplier = random.choices(multipliers, weights=weights, k=1)[0]
+    return multiplier, names[multiplier]

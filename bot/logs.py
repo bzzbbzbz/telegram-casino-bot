@@ -20,6 +20,17 @@ class ProjectNameProcessor:
         return event_dict
 
 
+class DropAiogramUpdateEvents:
+    def __call__(
+        self, logger: WrappedLogger, name: str, event_dict: EventDict
+    ) -> EventDict:
+        event = event_dict.get("event", "")
+        # Aiogram usually logs: "Update id=%s is handled. Duration %d ms by bot id=%d"
+        if isinstance(event, str) and "Update id=" in event and "is handled" in event:
+            raise structlog.DropEvent
+        return event_dict
+
+
 def get_structlog_config(log_config: LogConfig) -> dict:
     if log_config.show_debug_logs is True:
         min_level = logging.DEBUG
@@ -68,6 +79,7 @@ def get_processors(log_config: LogConfig) -> list:
         return dumps(result, default=str)
 
     processors = list()
+    processors.append(DropAiogramUpdateEvents())
     if log_config.show_datetime is True:
         processors.append(structlog.processors.TimeStamper(
             fmt=log_config.datetime_format,

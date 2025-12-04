@@ -55,6 +55,18 @@ class GameConfig(BaseModel):
     throttle_time_spin: int
     throttle_time_other: int
 
+
+class ChatRestrictionsConfig(BaseModel):
+    block_private_chats: bool
+    allowed_chat_ids: list[int]
+
+
+class AIConfig(BaseModel):
+    provider: str = "mock"
+    api_key: str = "dummy"
+    model: str = "gpt-4o-mini"
+    credit_cooldown_minutes: int = 60
+
 @lru_cache
 def parse_config_file() -> dict:
     # Проверяем наличие переменной окружения, которая переопределяет путь к конфигу

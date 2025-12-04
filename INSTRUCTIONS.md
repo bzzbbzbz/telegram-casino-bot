@@ -19,8 +19,11 @@ import aiosqlite
 from pathlib import Path
 
 class Database:
-    def __init__(self, db_path: str = "casino.db"):
-        self.db_path = db_path
+    def __init__(self, db_path: str = None):
+        if db_path is None:
+             self.db_path = str(Path(__file__).parent / "casino.db")
+        else:
+             self.db_path = db_path
 
     async def create_tables(self):
         async with aiosqlite.connect(self.db_path) as db:
